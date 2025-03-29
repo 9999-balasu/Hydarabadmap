@@ -1,3 +1,65 @@
+
+"use client";
+
+import { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
+
+const MapContainer = dynamic(() => import("react-leaflet").then(mod => mod.MapContainer), { ssr: false });
+const TileLayer = dynamic(() => import("react-leaflet").then(mod => mod.TileLayer), { ssr: false });
+const Marker = dynamic(() => import("react-leaflet").then(mod => mod.Marker), { ssr: false });
+const Popup = dynamic(() => import("react-leaflet").then(mod => mod.Popup), { ssr: false });
+const Polyline = dynamic(() => import("react-leaflet").then(mod => mod.Polyline), { ssr: false });
+
+export default function VehicleMap() {
+  const [L, setL] = useState(null);
+  const [position, setPosition] = useState({ lat: 17.3850, lng: 78.4867 });
+  const [route, setRoute] = useState([]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      import("leaflet").then((leaflet) => setL(leaflet));
+    }
+  }, []);
+
+  // Simulated GPS Movement (If No API is Available)
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setPosition((prev) => {
+        const newLat = prev.lat + 0.0005; // Slight shift in latitude
+        const newLng = prev.lng + 0.0005; // Slight shift in longitude
+        setRoute((prevRoute) => [...prevRoute, { lat: newLat, lng: newLng }]); // Store route history
+        return { lat: newLat, lng: newLng };
+      });
+    }, 2000); // Updates every 2 seconds
+
+    return () => clearInterval(interval);
+  }, []);
+
+  if (!L) return <p>Loading Map...</p>;
+
+  return (
+    <div style={{ height: "100vh", width: "100vw" }}>
+      <MapContainer center={position} zoom={14} style={{ height: "100%", width: "100%" }}>
+        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+
+        {/* Route History Polyline */}
+        <Polyline positions={route} color="blue" />
+
+        {/* Moving Vehicle Marker */}
+        <Marker position={position} icon={L.icon({ iconUrl: "/car-animated.gif", iconSize: [60, 60] })}>
+          <Popup>🚗 Vehicle Tracking</Popup>
+        </Marker>
+      </MapContainer>
+    </div>
+  );
+}
+
+
+
+
+
+
+
 /*"use client";
 
 import { useEffect, useState } from "react";
@@ -244,7 +306,7 @@ export default function VehicleMap() {
   );
 }
 */
-"use client";
+/*"use client";
 
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
@@ -335,8 +397,8 @@ export default function VehicleMap() {
       <MapContainer center={position} zoom={14} style={{ height: "100%", width: "100%" }}>
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
-        {/* Road Conditions Markers */}
-        {roadConditions.map((condition, index) => (
+        {/* Road Conditions Markers */
+       /* {roadConditions.map((condition, index) => (
           <Marker
             key={index}
             position={[condition.lat, condition.lng]}
@@ -346,9 +408,9 @@ export default function VehicleMap() {
           </Marker>
         ))}
 
-        {/* Pedestrian Markers */}
+        {/* Pedestrian Markers */
       {/* Pedestrian Markers */}
-{Array.isArray(pedestrians) &&
+/*{Array.isArray(pedestrians) &&
   pedestrians.map((ped, index) => (
     <Marker
       key={index}
@@ -361,18 +423,18 @@ export default function VehicleMap() {
 }
 
 
-        {/* Lane Warning Popup (if any lane warning exists) */}
-        {laneWarnings.length > 0 && (
+        {/* Lane Warning Popup (if any lane warning exists) */
+       /* {laneWarnings.length > 0 && (
           <Popup position={position}>
             ⚠️ Lane Violation Alert! Stay in your lane.
           </Popup>
         )}
 
-        {/* Route Polyline */}
-        <Polyline positions={route} color="blue" />
+        {/* Route Polyline */
+       /* <Polyline positions={route} color="blue" />
 
-        {/* Vehicle Marker */}
-        <Marker
+        {/* Vehicle Marker */
+        /*<Marker
           position={position}
           icon={L.icon({ iconUrl: "/car-animated.gif", iconSize: [60, 60] })}
         >
@@ -381,4 +443,6 @@ export default function VehicleMap() {
       </MapContainer>
     </div>
   );
-}
+}*/
+
+
